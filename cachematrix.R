@@ -3,43 +3,53 @@
 ## will return the cached result.
 
 
-## makeCacheMatrix: function allows to set, get the matrix, setinv and getinv for the
-## inversed matrix
+## makeCacheMatrix: this function function allows to set, get the matrix,
+##                  setinv and getinv for the inversed matrix
 
 makeCacheMatrix <- function(x = matrix()) {
-        ## initialize variables
-        s <- NULL
-        
+        ## initialize cache variable if it is not set
+        inv_matrix <- NULL
+  
         ## bind functions
         set <- function(y) {
                 x <<- y
-                s <<- NULL
+                inv_matrix <<- NULL
         }
-        get <- function() x
-        setinv <- function(solve) s <<- solve
-        getinv <- function() s
         
-        list(set = set, get = get,
-                setinv = setinv,
-                getinv = getinv)
+        get <- function() x
+        
+        setinv <- function(inverse) inv_matrix <<- inverse
+        
+        getinv <- function() inv_matrix
+        
+        list(set = set, get = get, setinv = setinv, getinv = getinv)
 }
 
 
-## cacheSolve: will caclulate the Inverse of a matrix, will return a cached result if
-## it exists
+## cacheSolve: this function will caclulate the Inverse of a matrix,
+##             will return a cached result if it exists
 
 cacheSolve <- function(x, ...) {
         ## Return a matrix that is the inverse of 'x'
-        s <- x$getinv()
+        inv_matrix <- x$getinv()
+        
         ## check if cached result is available
-        if(!is.null(s)) {
+        if(!is.null(inv_matrix)) {
                 message("getting cached data")
-                return(s)
+                return(inv_matrix)
         }
+        
         ## if no cached result not available, calculate the inverse, cache the result,
         ## return result
         data <- x$get()
-        s <- solve(data, ...)
-        x$setinv(s)
-        s
+        inv_matrix <- solve(data, ...)
+        x$setinv(inv_matrix)
+        inv_matrix
 }
+
+## Test sample run commands
+## x = matrix(c(1,0.5,0.5,1),nrow = 2,ncol = 2)
+## m = makeCacheMatrix(x)
+## m$get()
+## cacheSolve(m)
+## cacheSolve(m)
